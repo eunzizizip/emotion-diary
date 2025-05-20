@@ -1,0 +1,47 @@
+/* Calendar.css */
+
+/* 캘린더 기본 스타일 */
+.react-calendar {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    border: none;
+    font-family: Arial, sans-serif;
+  }
+  
+  .react-calendar__tile {
+    position: relative;
+    font-size: 14px;
+    text-align: center;
+    padding-bottom: 10px;
+  }
+  
+  .react-calendar__tile:enabled:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* 날짜 밑에 동그란 점 스타일 */
+  .react-calendar__tile--hasDots::after {
+    content: "";
+    position: absolute;
+    bottom: 5px; /* 날짜 밑에 점 위치 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  
+  /* 감정별 색깔 */
+  .react-calendar__tile--happy::after {
+    background-color: #ffeb3b; /* 행복 - 노란색 */
+  }
+  
+  .react-calendar__tile--normal::after {
+    background-color: rgb(88, 183, 88); /* 보통 - 초록색 */
+  }
+  
+  .react-calendar__tile--sad::after {
+    background-color: rgb(206, 94, 206); /* 슬픔 - 보라라색 */
+  }
+  

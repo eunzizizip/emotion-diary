@@ -85,7 +85,7 @@ app.post("/login", (req, res) => {
   });
 });
 
-// ✅ 일기 저장 + 감정 저장
+// ✅ 일기 저장 + 감정 저장 (같은 날짜의 일기는 삭제 후 다시 저장)
 app.post("/api/diary", async (req, res) => {
   const { user_id, content, date, emotion_type } = req.body;
 
@@ -93,33 +93,52 @@ app.post("/api/diary", async (req, res) => {
     const finalEmotion = emotion_type && emotion_type.trim() !== "" ? emotion_type : "없음";
     const comfortMessage = await generateComfortMessage(content, finalEmotion);
 
-    const diaryQuery = "INSERT INTO diaries (user_id, content, created_at) VALUES (?, ?, ?)";
-    db.query(diaryQuery, [user_id, content, date], (err, result) => {
-      if (err) {
-        console.error("일기 저장 실패:", err);
-        return res.status(500).json({ message: "일기 저장 실패" });
+    // 1. 기존 일기 삭제 (해당 날짜에 작성된 일기)
+    const deleteQuery = `
+      DELETE d, e
+      FROM diaries d
+      LEFT JOIN emotions e ON d.diary_id = e.diary_id
+      WHERE d.user_id = ? AND DATE(d.created_at) = ?
+    `;
+
+    db.query(deleteQuery, [user_id, date], (deleteErr) => {
+      if (deleteErr) {
+        console.error("기존 일기 삭제 실패:", deleteErr);
+        return res.status(500).json({ message: "기존 일기 삭제 실패" });
       }
 
-      const diaryId = result.insertId;
-
-      const emotionQuery = "INSERT INTO emotions (diary_id, emotion_type, ai_message) VALUES (?, ?, ?)";
-      db.query(emotionQuery, [diaryId, finalEmotion, comfortMessage], (emotionErr) => {
-        if (emotionErr) {
-          console.error("감정 저장 실패:", emotionErr);
-          return res.status(500).json({ message: "감정 저장 실패" });
+      // 2. 새 일기 삽입
+      const diaryQuery = "INSERT INTO diaries (user_id, content, created_at) VALUES (?, ?, ?)";
+      db.query(diaryQuery, [user_id, content, date], (diaryErr, result) => {
+        if (diaryErr) {
+          console.error("일기 저장 실패:", diaryErr);
+          return res.status(500).json({ message: "일기 저장 실패" });
         }
 
-        res.status(200).json({
-          message: "일기와 감정 저장 완료",
-          comfortMessage,
-          diaryId,
+        const diaryId = result.insertId;
+
+        // 3. 감정 저장
+        const emotionQuery = "INSERT INTO emotions (diary_id, emotion_type, ai_message) VALUES (?, ?, ?)";
+        db.query(emotionQuery, [diaryId, finalEmotion, comfortMessage], (emotionErr) => {
+          if (emotionErr) {
+            console.error("감정 저장 실패:", emotionErr);
+            return res.status(500).json({ message: "감정 저장 실패" });
+          }
+
+          res.status(200).json({
+            message: "기존 일기를 삭제하고 새로 저장했습니다.",
+            comfortMessage,
+            diaryId,
+          });
         });
       });
     });
   } catch (err) {
+    console.error("위로글 생성 실패:", err);
     res.status(500).json({ message: "위로글 생성 실패", error: err });
   }
 });
+
 
 // ✅ 일기 조회
 app.get("/diaries/:userId/:date", (req, res) => {
@@ -137,6 +156,23 @@ app.get("/diaries/:userId/:date", (req, res) => {
     res.json(results);
   });
 });
+
+
+// ✅ 감정 데이터 조회 (모든 감정 데이터 가져오기)
+app.get("/emotions", (req, res) => {
+  const sql = `
+    SELECT e.diary_id, e.emotion_type, e.ai_message, d.created_at
+    FROM emotions e
+    JOIN diaries d ON e.diary_id = d.diary_id
+    ORDER BY d.created_at DESC
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ message: "감정 데이터 조회 실패", error: err });
+    res.json(results);
+  });
+});
+
 
 // ✅ 기본 라우트
 app.get("/", (req, res) => {

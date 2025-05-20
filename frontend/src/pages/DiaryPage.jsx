@@ -9,11 +9,17 @@ const DiaryPage = () => {
   const [diaries, setDiaries] = useState([]);
   const [comfortMessage, setComfortMessage] = useState("");
   const [emotionType, setEmotionType] = useState("");
+  const [emotions, setEmotions] = useState({}); // 감정 정보를 저장할 상태 추가
 
   const fetchDiaries = async () => {
     try {
       const res = await axios.get(`http://localhost:5000/diaries/${userId}/${date}`);
       setDiaries(res.data);
+      const emotionsData = res.data.reduce((acc, diary) => {
+        acc[diary.created_at] = diary.emotion_type; // 감정 타입을 날짜별로 저장
+        return acc;
+      }, {});
+      setEmotions(emotionsData); // 감정 데이터 상태 업데이트
     } catch (err) {
       console.error("일기 불러오기 실패:", err);
     }
@@ -41,6 +47,7 @@ const DiaryPage = () => {
       alert("일기 저장에 실패했습니다.");
     }
   };
+
 
   return (
     <div>
@@ -83,8 +90,8 @@ const DiaryPage = () => {
       ) : (
         <ul>
           {diaries.map((diary) => (
-            <li key={diary.diary_id}>
-              <strong>{new Date(diary.created_at).toLocaleTimeString()}</strong> - {diary.content}
+            <li key={diary.diary_id}>             
+              <strong>{new Date(diary.created_at).toLocaleDateString()}</strong> - {diary.content}
               {diary.comfort_message && (
                 <div style={{ marginTop: "10px", fontStyle: "italic", color: "#444" }}>
                   → AI 위로글: {diary.comfort_message}

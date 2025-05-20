@@ -19,7 +19,8 @@ async function generateComfortMessage(diaryContent, emotionType) {
         },
         {
           role: "user",
-          content: `감정 상태는 "${emotionType}"이고, 다음은 사용자의 감정 일기야:\n"${diaryContent}"\n이 사람에게 감정 상태에 맞게 따뜻하고 진심 어린 위로글을 작성해 줘. 말투는 친절하고 다정하게 해줘.`,
+          content: `감정 상태는 "${emotionType}"이고, 다음은 사용자의 감정 일기야:\n"${diaryContent}"\n이 
+          사람에게 감정 상태에 맞게 따뜻하고 진심 어린 위로글을 작성해 줘. 말투는 친절하고 다정하게 해줘.`,
         },
       ],
       temperature: 0.7,
