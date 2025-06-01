@@ -2,16 +2,17 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import CalendarComponent from "./CalendarComponent";
+import './Home.css'; // 추가한 CSS 파일
+import Header from './Header';
 
 
 const Home = () => {
     return (
-        <div>
-            <h1>dAy1</h1>
-            <CalendarComponent />
-            <Link to="/login">
-                <button>로그인 페이지로 이동</button>
-            </Link>
+        <div className="home-container">
+            <Header />
+            <main>
+                <CalendarComponent />
+            </main>
         </div>
     );
 };

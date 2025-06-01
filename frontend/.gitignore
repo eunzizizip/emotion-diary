@@ -19,6 +19,7 @@
 .env.production.local
 
 # 환경 파일을 추가
+backend/.env
 .env           
 
 npm-debug.log*

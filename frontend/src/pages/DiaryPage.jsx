@@ -1,105 +1,111 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const DiaryPage = () => {
   const { date } = useParams();
-  const [diaryText, setDiaryText] = useState("");
-  const [userId] = useState(1); // TODO: 실제 로그인 사용자 ID로 교체
-  const [diaries, setDiaries] = useState([]);
-  const [comfortMessage, setComfortMessage] = useState("");
-  const [emotionType, setEmotionType] = useState("");
-  const [emotions, setEmotions] = useState({}); // 감정 정보를 저장할 상태 추가
+  const navigate = useNavigate();
 
-  const fetchDiaries = async () => {
+  const [diaryText, setDiaryText] = useState("");
+  const [emotionType, setEmotionType] = useState("");
+  const [comfortMessage, setComfortMessage] = useState("");
+  const [existingDiary, setExistingDiary] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // 로그인 시 저장한 user_id key명과 동일하게!
+  const userId = localStorage.getItem("user_id");
+
+  const fetchDiary = async () => {
     try {
       const res = await axios.get(`http://localhost:5000/diaries/${userId}/${date}`);
-      setDiaries(res.data);
-      const emotionsData = res.data.reduce((acc, diary) => {
-        acc[diary.created_at] = diary.emotion_type; // 감정 타입을 날짜별로 저장
-        return acc;
-      }, {});
-      setEmotions(emotionsData); // 감정 데이터 상태 업데이트
+      if (res.data.length > 0) {
+        setExistingDiary(res.data[0]);
+        setDiaryText(res.data[0].content);
+        setEmotionType(res.data[0].emotion_type);
+        setComfortMessage(res.data[0].comfort_message || "");
+        setIsEditing(false);
+      } else {
+        setExistingDiary(null);
+        setDiaryText("");
+        setEmotionType("");
+        setComfortMessage("");
+        setIsEditing(true);
+      }
     } catch (err) {
       console.error("일기 불러오기 실패:", err);
     }
   };
 
   useEffect(() => {
-    fetchDiaries();
-  }, [date]);
+    if (!userId) {
+      alert("로그인 후 이용 가능합니다.");
+      navigate("/login");
+    } else {
+      fetchDiary();
+    }
+  }, [date, userId, navigate]);
 
   const handleSaveDiary = async () => {
+    if (!diaryText || !emotionType) {
+      alert("일기 내용과 감정을 모두 입력하세요.");
+      return;
+    }
+
     try {
-      const res = await axios.post("http://localhost:5000/api/diary", {
+      await axios.post("http://localhost:5000/api/diary", {
         user_id: userId,
         content: diaryText,
-        date: date,
+        date,
         emotion_type: emotionType,
       });
 
-      setComfortMessage(res.data.comfortMessage || "위로글이 제공되지 않았습니다.");
-      setDiaryText("");
-      fetchDiaries();
       alert("일기가 저장되었습니다!");
+      fetchDiary();
+      // 편집 모드 종료 후 내용 유지하거나 초기화 할 수도 있음
+      // setDiaryText("");
+      // setEmotionType("");
     } catch (err) {
       console.error("일기 저장 실패:", err);
       alert("일기 저장에 실패했습니다.");
     }
   };
 
-
   return (
     <div>
       <h2>📝 {date}의 감정 일기</h2>
-      
-      <textarea
-        value={diaryText}
-        onChange={(e) => setDiaryText(e.target.value)}
-        placeholder="오늘의 감정을 기록해보세요..."
-        rows={5}
-        cols={40}
-      />
 
-      <div style={{ margin: "10px 0" }}>
-        <label>
-          오늘의 감정 👉{" "}
-          <select value={emotionType} onChange={(e) => setEmotionType(e.target.value)}>
-            <option value="">선택하세요</option>
-            <option value="행복">행복 ^^</option>
-            <option value="보통">그냥 쏘쏘 ㅡㅡ</option>
-            <option value="슬픔">흑흑 ㅠㅠ</option>
-          </select>
-        </label>
-      </div>
-
-      <button onClick={handleSaveDiary}>일기 저장</button>
-
-      {comfortMessage && (
-        <div style={{ marginTop: "20px", background: "#f8f8f8", padding: "15px", borderRadius: "10px" }}>
-          <h3>💬 AI 위로글</h3>
-          <p>{comfortMessage}</p>
+      {existingDiary && !isEditing && (
+        <div style={{ marginBottom: "20px" }}>
+          <p><strong>일기 내용:</strong> {existingDiary.content}</p>
+          <p><strong>AI 위로글:</strong> {existingDiary.comfort_message}</p>
+          <button onClick={() => setIsEditing(true)}>다시 작성하기</button>
         </div>
       )}
 
-      <hr />
+      {isEditing && (
+        <div>
+          <textarea
+            value={diaryText}
+            onChange={(e) => setDiaryText(e.target.value)}
+            placeholder="오늘의 감정을 기록해보세요..."
+            rows={5}
+            cols={40}
+          />
 
-      <h3>📚 내 일기 목록</h3>
-      {diaries.length === 0 ? (
-        <p>작성한 일기가 없습니다.</p>
-      ) : (
-        <ul>
-          {diaries.map((diary) => (
-            <li key={diary.diary_id}>             
-              <strong>{new Date(diary.created_at).toLocaleDateString()}</strong> - {diary.content}
-              {diary.comfort_message && (
-                <div style={{ marginTop: "10px", fontStyle: "italic", color: "#444" }}>
-                  → AI 위로글: {diary.comfort_message}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
+          <div style={{ margin: "10px 0" }}>
+            <label>
+              오늘의 감정 👉{" "}
+              <select value={emotionType} onChange={(e) => setEmotionType(e.target.value)}>
+                <option value="">선택하세요</option>
+                <option value="행복">행복 ^^</option>
+                <option value="보통">그냥 쏘쏘 ㅡㅡ</option>
+                <option value="슬픔">흑흑 ㅠㅠ</option>
+              </select>
+            </label>
+          </div>
+
+          <button onClick={handleSaveDiary}>저장하기</button>
+        </div>
       )}
     </div>
   );

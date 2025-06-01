@@ -1,0 +1,45 @@
+/* src/pages/Home.css */
+
+.home-container {
+  position: relative;
+  min-height: 100vh;
+  background-color: #fefefe;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 헤더 스타일 */
+.home-header {
+  background-color: #f7afec; /* 연보라/보라 계열 */
+  padding: 20px 40px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 제목 */
+.header-title {
+  color: white;
+  font-size: 32px;
+  margin: 0;
+}
+
+/* 로그인 버튼 */
+.login-button {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  color: #f7afec;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.login-button:hover {
+  background-color: #f3f3f3;
+}

@@ -81,11 +81,11 @@ app.post("/login", (req, res) => {
     if (!isMatch) return res.status(401).json({ message: "이메일 또는 비밀번호가 올바르지 않습니다." });
 
     const token = jwt.sign({ userId: user.user_id }, jwtSecret, { expiresIn: "1h" });
-    res.json({ message: "로그인 성공!", token, userId: user.user_id });
+    res.json({ message: "로그인 성공!", token, userId: user.user_id, username: user.username });
   });
 });
 
-// ✅ 일기 저장 + 감정 저장 (같은 날짜의 일기는 삭제 후 다시 저장)
+// ✅ 일기 저장 (같은 날짜의 일기는 삭제 후 저장)
 app.post("/api/diary", async (req, res) => {
   const { user_id, content, date, emotion_type } = req.body;
 
@@ -93,7 +93,6 @@ app.post("/api/diary", async (req, res) => {
     const finalEmotion = emotion_type && emotion_type.trim() !== "" ? emotion_type : "없음";
     const comfortMessage = await generateComfortMessage(content, finalEmotion);
 
-    // 1. 기존 일기 삭제 (해당 날짜에 작성된 일기)
     const deleteQuery = `
       DELETE d, e
       FROM diaries d
@@ -107,7 +106,6 @@ app.post("/api/diary", async (req, res) => {
         return res.status(500).json({ message: "기존 일기 삭제 실패" });
       }
 
-      // 2. 새 일기 삽입
       const diaryQuery = "INSERT INTO diaries (user_id, content, created_at) VALUES (?, ?, ?)";
       db.query(diaryQuery, [user_id, content, date], (diaryErr, result) => {
         if (diaryErr) {
@@ -116,8 +114,6 @@ app.post("/api/diary", async (req, res) => {
         }
 
         const diaryId = result.insertId;
-
-        // 3. 감정 저장
         const emotionQuery = "INSERT INTO emotions (diary_id, emotion_type, ai_message) VALUES (?, ?, ?)";
         db.query(emotionQuery, [diaryId, finalEmotion, comfortMessage], (emotionErr) => {
           if (emotionErr) {
@@ -139,8 +135,7 @@ app.post("/api/diary", async (req, res) => {
   }
 });
 
-
-// ✅ 일기 조회
+// ✅ 일기 조회 (날짜별)
 app.get("/diaries/:userId/:date", (req, res) => {
   const { userId, date } = req.params;
   const sql = `
@@ -157,17 +152,37 @@ app.get("/diaries/:userId/:date", (req, res) => {
   });
 });
 
+// ✅ 전체 일기 목록 조회 (로그인한 사용자만)
+app.get("/diaries/user/:userId", (req, res) => {
+  const { userId } = req.params;
 
-// ✅ 감정 데이터 조회 (모든 감정 데이터 가져오기)
-app.get("/emotions", (req, res) => {
+  const sql = `
+    SELECT d.*, e.emotion_type, e.ai_message AS comfort_message
+    FROM diaries d
+    LEFT JOIN emotions e ON d.diary_id = e.diary_id
+    WHERE d.user_id = ?
+    ORDER BY d.created_at DESC
+  `;
+
+  db.query(sql, [userId], (err, results) => {
+    if (err) return res.status(500).json({ message: "사용자 일기 조회 실패", error: err });
+    res.json(results);
+  });
+});
+
+// 🔒 로그인한 사용자의 감정 데이터만 조회
+app.get("/emotions/:userId", (req, res) => {
+  const { userId } = req.params;
+
   const sql = `
     SELECT e.diary_id, e.emotion_type, e.ai_message, d.created_at
     FROM emotions e
     JOIN diaries d ON e.diary_id = d.diary_id
+    WHERE d.user_id = ?                -- ✅ 이 조건 추가!
     ORDER BY d.created_at DESC
   `;
 
-  db.query(sql, (err, results) => {
+  db.query(sql, [userId], (err, results) => {
     if (err) return res.status(500).json({ message: "감정 데이터 조회 실패", error: err });
     res.json(results);
   });
