@@ -189,6 +189,26 @@ app.get("/emotions/:userId", (req, res) => {
 });
 
 
+// 월별 감정 흐름 조회 API
+app.get("/emotions/:userId/:year/:month", (req, res) => {
+  const { userId, year, month } = req.params;
+
+  const sql = `
+    SELECT e.emotion_type, DATE(d.created_at) AS date
+    FROM emotions e
+    JOIN diaries d ON e.diary_id = d.diary_id
+    WHERE d.user_id = ? AND YEAR(d.created_at) = ? AND MONTH(d.created_at) = ?
+    ORDER BY d.created_at ASC
+  `;
+
+  db.query(sql, [userId, year, month], (err, results) => {
+    if (err) return res.status(500).json({ message: "감정 데이터 조회 실패", error: err });
+    res.json(results);
+  });
+});
+
+
+
 // ✅ 기본 라우트
 app.get("/", (req, res) => {
   res.send("서버가 정상적으로 실행 중입니다!");

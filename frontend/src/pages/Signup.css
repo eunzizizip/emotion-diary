@@ -1,0 +1,126 @@
+/* 전체 페이지 스타일 */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Noto Sans KR", sans-serif;
+  background-color: #f5f5f5;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 회원가입 컨테이너 */
+.signup-container {
+  max-width: 400px;
+  width: 90%;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 제목 스타일 */
+.signup-container h2 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* input 스타일 */
+.signup-container input {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+/* input focus 스타일 */
+.signup-container input:focus {
+  border-color: #f7afec;
+}
+
+/* 이메일 중복 확인 섹션 */
+.signup-container form > div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.signup-container form > div input[type="email"] {
+  flex: 1;
+}
+
+/* 중복확인 버튼 (항상 활성) */
+.signup-container form > div button {
+  width: auto;
+  padding: 12px 20px;
+  margin-top: 0;
+  white-space: nowrap;
+  background-color: #f7afec;
+  font-size: 14px;
+}
+
+.signup-container form > div button:hover {
+  background-color: #e899da;
+}
+
+/* 버튼 스타일 */
+.signup-container button {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #f7afec;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+/* hover 효과 */
+.signup-container button:hover {
+  background-color: #e899da;
+}
+
+/* 비활성 상태 버튼 */
+.signup-container button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* 메시지 스타일 */
+.signup-container p {
+  font-size: 14px;
+  margin: 5px 0;
+  text-align: center;
+}
+
+/* 에러 메시지 */
+.signup-container p.red {
+  color: red;
+}
+
+/* 성공 메시지 */
+.signup-container p.green {
+  color: green;
+}
+
+/* 입력 제목 스타일 */
+.signup-container .inputTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  margin-top: 0;
+}

@@ -1,20 +1,6 @@
-/* 캘린더 전체 래퍼 */
-.calendar-wrapper {
-  max-width: 600px;
-  margin: 40px auto;
-  background-color: #fff;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  padding: 20px;
-  transition: all 0.3s ease-in-out;
-}
-
-.calendar-title {
-  text-align: center;
-  font-size: 22px;
-  margin-bottom: 20px;
-  font-weight: bold;
-  color: #333;
+/* 캘린더 컴포넌트 전용 스타일 */
+.calendar-component {
+  width: 100%;
 }
 
 /* 캘린더 스타일 */
@@ -25,16 +11,54 @@
   background-color: transparent;
 }
 
+.react-calendar__navigation {
+  margin-bottom: 20px;
+}
+
+.react-calendar__navigation button {
+  color: #333;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  background: none;
+  padding: 10px;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #f0f0f0;
+  border-radius: 8px;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: #666;
+}
+
 .react-calendar__tile {
   position: relative;
   font-size: 14px;
   padding: 15px 0;
   transition: background-color 0.2s ease;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
 .react-calendar__tile:enabled:hover {
   background-color: #f3f3f3;
   border-radius: 8px;
+}
+
+.react-calendar__tile--active {
+  background-color: #f7afec !important;
+  color: white;
+  border-radius: 8px;
+}
+
+.react-calendar__tile--active:hover {
+  background-color: #f49ae6 !important;
 }
 
 /* 감정 점 공통 스타일 */
@@ -44,20 +68,72 @@
   bottom: 6px;
   left: 50%;
   transform: translateX(-50%);
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
 /* 감정별 색상 */
 .react-calendar__tile--happy::after {
-  background-color: #FFD54F; /* 밝은 노란색 */
+  background-color: #FFD54F; /* 밝은 노란색 - 행복 */
 }
 
 .react-calendar__tile--normal::after {
-  background-color: #81C784; /* 초록 */
+  background-color: #81C784; /* 초록 - 보통 */
 }
 
 .react-calendar__tile--sad::after {
-  background-color: #BA68C8; /* 연보라 */
+  background-color: #BA68C8; /* 연보라 - 슬픔 */
+}
+
+/* 감정 범례 */
+.emotion-legend {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-dot--happy {
+  background-color: #FFD54F;
+}
+
+.legend-dot--normal {
+  background-color: #81C784;
+}
+
+.legend-dot--sad {
+  background-color: #BA68C8;
+}
+
+/* 기존 스타일과의 호환성을 위해 유지 */
+.calendar-wrapper {
+  /* Home.css의 calendar-section에서 처리하므로 여기서는 비움 */
+}
+
+.calendar-title {
+  /* section-title로 대체되므로 비움 */
+}
+
+/* 기존 chart 관련 스타일 제거 (이제 Home.css에서 처리) */
+.calendar-with-chart .calendar-chart-container,
+.calendar-with-chart .calendar-left,
+.calendar-with-chart .chart-right {
+  /* 더 이상 사용하지 않음 */
 }

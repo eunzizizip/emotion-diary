@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 const DiaryPage = () => {
   const { date } = useParams();
+  console.log("DiaryPage date param:", date);
   const navigate = useNavigate();
 
   const [diaryText, setDiaryText] = useState("");

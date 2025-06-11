@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import './Signup.css';
 
 const Signup = () => {
     const [formData, setFormData] = useState({ username: "", email: "", password: "" });
@@ -67,30 +68,65 @@ const Signup = () => {
         }
     };
 
+    const isFormValid = formData.username.trim() !== "" && emailValid && passwordValid && isEmailChecked;
+
     return (
-        <div>
-            <h2>회원가입</h2>
+        <div className="signup-container">
+            <h2>회원가입 정보를 <br /> 입력해주세요</h2>
             <form onSubmit={handleSubmit}>
-                <input type="text" name="username" placeholder="이름" onChange={handleChange} required />
 
-                <div>
-                    <input type="email" name="email" placeholder="이메일" onChange={handleChange} required />
-                    <button type="button" onClick={checkEmailDuplicate}>중복 확인</button>
-                    <p style={{ color: emailCheckMessage.includes("가능") ? "green" : "red" }}>{emailCheckMessage}</p>
+                <div className="inputTitle">사용자 이름</div>
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="이름"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                />
+
+                <div className="inputTitle" style={{ marginTop: '20px' }}>이메일 주소</div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="test@gmail.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        style={{ flexGrow: 1 }}
+                    />
+                    <button type="button" onClick={checkEmailDuplicate} style={{ marginLeft: '10px' }}>
+                        중복 확인
+                    </button>
                 </div>
+                {emailCheckMessage && (
+                    <p className={emailCheckMessage.includes("가능") ? "green" : "red"}>
+                        {emailCheckMessage}
+                    </p>
+                )}
 
+                <div className="inputTitle" style={{ marginTop: '20px' }}>비밀번호</div>
                 <input
                     type="password"
                     name="password"
-                    placeholder="비밀번호 (8자 이상, 특수문자 포함)"
+                    placeholder="영문, 숫자, 특수문자 포함 8자 이상"
+                    value={formData.password}
                     onChange={handleChange}
                     required
                 />
                 {!passwordValid && formData.password.length > 0 && (
-                    <p style={{ color: "red" }}>비밀번호는 특수문자를 포함한 8자 이상이어야 합니다.</p>
+                    <p className="red">비밀번호는 특수문자를 포함한 8자 이상이어야 합니다.</p>
                 )}
 
-                <button type="submit">회원가입</button>
+                <button 
+                    type="submit" 
+                    className={isFormValid ? "active" : ""}
+                    disabled={!isFormValid}
+                    style={{ marginTop: '30px' }}
+                >
+                    회원가입
+                </button>
             </form>
         </div>
     );

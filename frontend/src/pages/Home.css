@@ -1,5 +1,3 @@
-/* src/pages/Home.css */
-
 .home-container {
   position: relative;
   min-height: 100vh;
@@ -9,27 +7,23 @@
 
 /* 헤더 스타일 */
 .home-header {
-  background-color: #f7afec; /* 연보라/보라 계열 */
+  background-color: #f7afec;
   padding: 20px 40px;
   position: relative;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #ddd;
 }
 
-/* 제목 */
 .header-title {
   color: white;
   font-size: 32px;
   margin: 0;
 }
 
-/* 로그인 버튼 */
 .login-button {
-  position: absolute;
-  right: 40px;
-  top: 50%;
-  transform: translateY(-50%);
+  position: relative;
   background-color: white;
   color: #f7afec;
   border: none;
@@ -42,4 +36,72 @@
 
 .login-button:hover {
   background-color: #f3f3f3;
+}
+
+/* 메인 콘텐츠 영역 */
+.home-main {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.intro-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.home-content-wrapper {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.calendar-section {
+  flex: 0 0 450px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+}
+
+.chart-section {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  min-height: 400px;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 25px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .home-content-wrapper {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .calendar-section {
+    flex: none;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .chart-section {
+    flex: none;
+    width: 100%;
+  }
+
+  .home-main {
+    padding: 20px;
+  }
 }

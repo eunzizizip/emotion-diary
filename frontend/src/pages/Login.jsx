@@ -1,6 +1,7 @@
 import { useState } from "react"; 
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import './Login.css';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -29,16 +30,32 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>이메일과 비밀번호를 <br />입력해주세요</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="email" name="email" placeholder="test@gmail.com" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="영문, 숫자, 특수문자 포함 8자 이상" onChange={handleChange} required />
-        <button type="submit">확인</button>
-      </form>
-      <p>처음이신가요? <Link to="/signup">회원가입</Link></p>
-    </div>
-  );
+  <div className="login-container">
+    <h2>이메일과 비밀번호를 <br />입력해주세요</h2>
+    <form onSubmit={handleSubmit}>
+
+      <div className="inputTitle">이메일</div>
+      <input
+        type="email"
+        name="email"
+        placeholder="test@gmail.com"
+        onChange={handleChange}
+        required
+      />
+
+      <div className="inputTitle">비밀번호</div>
+      <input
+        type="password"
+        name="password"
+        placeholder="영문, 숫자, 특수문자 포함 8자 이상"
+        onChange={handleChange}
+        required
+      />
+      <button type="submit" disabled={!credentials.email || !credentials.password}>확인</button>
+    </form>
+    <p>처음이신가요? <Link to="/signup">회원가입</Link></p>
+  </div>
+);
 };
 
 export default Login;
