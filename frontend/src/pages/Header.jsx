@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Header = () => {
+const Header = ({ activeTab, onTabChange }) => {
     const navigate = useNavigate();
     const [username, setUsername] = useState(null);
 
@@ -27,7 +27,37 @@ const Header = () => {
             backgroundColor: '#c8e6a8',
             borderBottom: '1px solid #ddd'
         }}>
-            <h1 style={{ margin: 0 }}>dAy1</h1>
+            <h1 style={{ margin: 0 }}>dAy 1</h1>
+
+            <nav style={{ display: 'flex', gap: '16px' }}>
+                <button
+                    onClick={() => onTabChange('write')}
+                    style={{
+                        backgroundColor: activeTab === 'write' ? '#8bc34a' : 'transparent',
+                        border: 'none',
+                        padding: '8px 16px',
+                        cursor: 'pointer',
+                        fontWeight: activeTab === 'write' ? 'bold' : 'normal',
+                        borderRadius: '8px'
+                    }}
+                >
+                    일기 작성하기
+                </button>
+
+                <button
+                    onClick={() => onTabChange('analysis')}
+                    style={{
+                        backgroundColor: activeTab === 'analysis' ? '#8bc34a' : 'transparent',
+                        border: 'none',
+                        padding: '8px 16px',
+                        cursor: 'pointer',
+                        fontWeight: activeTab === 'analysis' ? 'bold' : 'normal',
+                        borderRadius: '8px'
+                    }}
+                >
+                    일기 한달 분석
+                </button>
+            </nav>
 
             {username ? (
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>

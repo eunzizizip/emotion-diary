@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react"; 
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import styles from "./DiaryPage.module.css"; // CSS 모듈 임포트
 
 const DiaryPage = () => {
   const { date } = useParams();
-  console.log("DiaryPage date param:", date);
   const navigate = useNavigate();
 
   const [diaryText, setDiaryText] = useState("");
@@ -13,7 +13,6 @@ const DiaryPage = () => {
   const [existingDiary, setExistingDiary] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // 로그인 시 저장한 user_id key명과 동일하게!
   const userId = localStorage.getItem("user_id");
 
   const fetchDiary = async () => {
@@ -62,9 +61,6 @@ const DiaryPage = () => {
 
       alert("일기가 저장되었습니다!");
       fetchDiary();
-      // 편집 모드 종료 후 내용 유지하거나 초기화 할 수도 있음
-      // setDiaryText("");
-      // setEmotionType("");
     } catch (err) {
       console.error("일기 저장 실패:", err);
       alert("일기 저장에 실패했습니다.");
@@ -72,42 +68,48 @@ const DiaryPage = () => {
   };
 
   return (
-    <div>
-      <h2>📝 {date}의 감정 일기</h2>
+    <div className={styles.diaryWrapper}>
+      <div className={styles.diaryContainer}>
+        <h2>📝 {date}</h2>
 
-      {existingDiary && !isEditing && (
-        <div style={{ marginBottom: "20px" }}>
-          <p><strong>일기 내용:</strong> {existingDiary.content}</p>
-          <p><strong>AI 위로글:</strong> {existingDiary.comfort_message}</p>
-          <button onClick={() => setIsEditing(true)}>다시 작성하기</button>
-        </div>
-      )}
-
-      {isEditing && (
-        <div>
-          <textarea
-            value={diaryText}
-            onChange={(e) => setDiaryText(e.target.value)}
-            placeholder="오늘의 감정을 기록해보세요..."
-            rows={5}
-            cols={40}
-          />
-
-          <div style={{ margin: "10px 0" }}>
-            <label>
-              오늘의 감정 👉{" "}
-              <select value={emotionType} onChange={(e) => setEmotionType(e.target.value)}>
-                <option value="">선택하세요</option>
-                <option value="행복">행복 ^^</option>
-                <option value="보통">그냥 쏘쏘 ㅡㅡ</option>
-                <option value="슬픔">흑흑 ㅠㅠ</option>
-              </select>
-            </label>
+        {existingDiary && !isEditing && (
+          <div className={styles.diaryInfo}>
+            <p><strong>일기 내용:</strong> {existingDiary.content}</p>
+            <p><strong>AI 위로글:</strong> {existingDiary.comfort_message}</p>
+            <button className={styles.btn} onClick={() => setIsEditing(true)}>다시 작성하기</button>
           </div>
+        )}
 
-          <button onClick={handleSaveDiary}>저장하기</button>
-        </div>
-      )}
+        {isEditing && (
+          <div>
+            <textarea
+              className={styles.textarea}
+              value={diaryText}
+              onChange={(e) => setDiaryText(e.target.value)}
+              placeholder="오늘 하루는 어떠셨나요? 💝"
+              rows={5}
+            />
+
+            <div className={styles.emotionSelect}>
+              <label>
+                오늘의 감정 👉{" "}
+                <select
+                  className={styles.select}
+                  value={emotionType}
+                  onChange={(e) => setEmotionType(e.target.value)}
+                >
+                  <option value="">선택하세요</option>
+                  <option value="행복">행복 ^^</option>
+                  <option value="보통">그냥 쏘쏘 ㅡㅡ</option>
+                  <option value="슬픔">흑흑 ㅠㅠ</option>
+                </select>
+              </label>
+            </div>
+
+            <button className={styles.btn} onClick={handleSaveDiary}>저장하기</button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
